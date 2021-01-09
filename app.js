@@ -1,30 +1,30 @@
 
+
+// imports
 var cheerio = require('cheerio');
 var request = require('request');
+var moment = require('moment');
 
-const url = 'https://www.roblox.com/games/5665787539/Relics-Gods-Of-Glory-BETA'
+const fs = require('fs');
 
+// URL
+const URL = 'https://www.roblox.com/games/5665787539/Relics-Gods-Of-Glory-BETA';
+const WEBSITE_DATA_DELAY = 60;
+const LOOP = true;
+
+// Return Date
 function getDate() {
-    let date_ob = new Date();
-    
-    let date = ("0" + date_ob.getDate()).slice(-2);
-    let month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
-    let year = date_ob.getFullYear();
-
-    return month +'/'+ date +'/'+ year;
+    return moment().format('l');
 }
 
+// Return Time
 function getTime() {
-    let date_ob = new Date();
-
-    let hours = date_ob.getHours();
-    let minutes = date_ob.getMinutes();
-    let seconds = date_ob.getSeconds();
-
-    return hours.toString() +':'+ minutes.toString() +':'+ seconds.toString();
+    return moment().format('HH:mm:ss');
 }
 
-function fetchNumPlayersInGame(placeUrl) {
+// Promise response data
+function GetStats(placeUrl) {
+    let webdata = null;
     return new Promise((resolve, reject) => {
         request(placeUrl, (err, response, body) => {
             if (err) reject(err)
@@ -32,7 +32,7 @@ function fetchNumPlayersInGame(placeUrl) {
                 let $ = cheerio.load(body)
                 let classdata = $('.game-stat .text-lead');
 
-                let webdata = {
+                webdata = {
                     'Date' : '',
                     'Time' : '',
                     'Players' : '',
@@ -83,11 +83,31 @@ function fetchNumPlayersInGame(placeUrl) {
                 });
 
                 console.log(webdata);
+                csvline = webdata['Date']
+                + ',' + webdata['Time']
+                + ',' + webdata['Players']
+                + ',' + webdata['Favorites']
+                + ',' + webdata['Visits']
+                + ',' + webdata['Created'] 
+                + ',' + webdata['Updated']
+                + ',' + webdata['Genre']
+                + ',' + webdata['MaxPlayers']
+                + '\n';
+
+                fs.appendFile('output.csv', csvline, function (err) {
+                    if (err) throw err;
+                });
+
             }
         })
-    }) 
+    })
 }
 
-fetchNumPlayersInGame(url).then(function(result) {
-    console.log(result);
-})
+function WebsiteData() {
+    GetStats(URL);
+    if (LOOP) {
+        setTimeout(WebsiteData, WEBSITE_DATA_DELAY * 1000);
+    };
+}
+
+WebsiteData();

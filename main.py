@@ -1,7 +1,7 @@
 
 #  Scraping with chromedriver? 
 
-'''
+
 
 import datetime
 import os
@@ -56,4 +56,3 @@ def get_website_data(url):
 while True:
     get_website_data(URL)
 
-'''
