@@ -1,58 +1,28 @@
-
-#  Scraping with chromedriver? 
-
-
-
+import pandas as pd # pip install pandas
+import numpy as np
+import pandas as pd
 import datetime
-import os
-import json
 
-from bs4 import BeautifulSoup
-from selenium import webdriver
-from time import sleep
+df = pd.read_csv('Book1.csv')
 
-GAME_ID = '5665787539'
-URL = 'https://www.roblox.com/games/' + GAME_ID + '/'
+def getDataBetweenDates(df, start, end):
+    return df[(df['date'] >= start) & (df['date'] <= end)]
 
-INTERVAL_SECONDS = 15
+def getDataBetweenTimes(df, start, end):
+    return df[(df['time'] >= start) & (df['time'] <= end)]
 
-def push_new_player_count(players):
-    dirToSearch = os.getcwd()
-    d = datetime.datetime.now()
-    newline = d.strftime('%x,%X,') + (str(players)).replace(',', '') + '\n'
-    with open(dirToSearch + '\\Data\\12345.csv','a') as f:
-        f.write(newline)
+def getHighestValueOfDF(df):
+    return df['players'].max()
 
-def get_website_data(url):
-    try:
-        options = webdriver.ChromeOptions()
-        options.add_argument('headless')
-        options.add_experimental_option("excludeSwitches", ["enable-logging"])
-        prefs = {"profile.managed_default_content_settings.images": 2}
-        options.add_experimental_option("prefs", prefs)
-        browser = webdriver.Chrome(executable_path='C:\\chromedriver.exe', options=options)
+def getLowestValueOfDF(df):
+    return df['players'].min()
 
-        browser.get(url)
-        html = browser.page_source
-        soup = BeautifulSoup(html, 'lxml')
+def getMinAndMaxOfDFWithDate(df, date):
+    x = getDataBetweenDates(df, '01/04/2021', '01/05/2021')
+    return getLowestValueOfDF(x), getHighestValueOfDF(x)
 
-        while True:
-            if (int(((datetime.datetime.now()).strftime('%X')).split(':')[2]) % INTERVAL_SECONDS == 0):
-                break
-            sleep(0.1)
-        
-        players = (soup.find('p', {'class': 'text-lead font-caption-body wait-for-i18n-format-render'})).text
-        
-        push_new_player_count(players)
-        
-        browser.quit()
-    except Exception as e:
-        print('Exception in SavePlayers.py:', e)
-        sleep(0.5)
-        #pass
-    else:
-        pass
 
-while True:
-    get_website_data(URL)
-
+#data = getDataBetweenDates(df, '01/04/2021', '01/05/2021')
+##data = df['01/04/2021']
+#print(data)
+#print(getLowestValueOfDF(data))
