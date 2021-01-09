@@ -1,16 +1,28 @@
 
+/*
+
+created: 01/07/2021
+last updated: 01/09/2021
+
+
+TO-DO:
+1 - use command line args [0]==username, [1]==password
+2 - make request with args to roblox, getcookie for .ROBLOXSECURITY (token for account)
+3 - using token, make 2nd request, with token ONLY -> on game-passes page for total sales
+4 - scraping sales will save to csv like other public data
+
+*/
 
 // imports
-var cheerio = require('cheerio');
-var request = require('request');
-var moment = require('moment');
-
-const fs = require('fs');
+var cheerio = require('cheerio'); // html parser
+var request = require('request'); // request module
+var moment = require('moment');   // date and time
+const fs = require('fs');         // file storage
 
 // URL
-const URL = 'https://www.roblox.com/games/5665787539/Relics-Gods-Of-Glory-BETA';
-const WEBSITE_DATA_DELAY = 60;
-const LOOP = true;
+const URL = 'https://www.roblox.com/games/5665787539/Relics-Gods-Of-Glory-BETA'; // uri with public data
+const GAMEPASSES_URL = 'https://www.roblox.com/develop/groups/7312028?Page=game-passes'; // uri with gamepass
+const WEBSITE_DATA_DELAY = 60; // rate at which data saves to .csv
 
 // Return Date
 function getDate() {
@@ -23,10 +35,16 @@ function getTime() {
 }
 
 // Promise response data
-function GetStats(placeUrl) {
+function GetStats() {
     let webdata = null;
     return new Promise((resolve, reject) => {
-        request(placeUrl, (err, response, body) => {
+        let cookie = request.cookie('');
+        request({
+            uri : URL,
+            headers : {
+                'Cookie' : cookie // NOT YET IMPLEMENTED
+            }
+        }, (err, response, body) => {
             if (err) reject(err)
             else {
                 let $ = cheerio.load(body)
@@ -103,11 +121,56 @@ function GetStats(placeUrl) {
     })
 }
 
-function WebsiteData() {
-    GetStats(URL);
-    if (LOOP) {
-        setTimeout(WebsiteData, WEBSITE_DATA_DELAY * 1000);
-    };
+// Scraping data from the gamepasses page
+function GetGamepassStats() {
+    let webdata = null;
+    return new Promise((resolve, reject) => {
+        let cookie = request.cookie('');
+        request({
+            uri : GAMEPASSES_URL,
+            headers : {
+                'Cookie' : cookie // something as to how sending a cookie would look
+            }
+        }, (err, response, body) => {
+            if (err) reject(err)
+            else {
+                let $ = cheerio.load(body)
+
+                let classdata = $('.totals-label');
+            }
+        })
+    })
 }
 
-WebsiteData();
+
+// Loop for the public website data
+function WebsiteData() {
+    GetStats();
+    setTimeout(WebsiteData, WEBSITE_DATA_DELAY * 1000);
+}
+
+// Loop for the private gamepass data
+function GamepassData() {
+    // NOT YET FUNCTIONAL
+    //GetGamepassStats();
+    //setTimeout(GamepassData, WEBSITE_DATA_DELAY * 1000);
+}
+
+//# Start looping
+function Init() {
+    GamepassData();
+    WebsiteData();
+}
+
+// Grab potential command line args
+let args = process.argv.slice(2);
+let creds = [];
+if (args.length == 2) {
+    creds.push(args[0]);
+    creds.push(args[1]);
+}
+
+// IF username and password passed into command line args, THEN run
+if (creds[0] && creds[1]) {
+    Init();
+};
