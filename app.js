@@ -11,16 +11,53 @@ function fetchNumPlayersInGame(placeUrl) {
             else {
                 let $ = cheerio.load(body)
                 let classdata = $('.game-stat .text-lead');
-                
+
+                let webdata = {
+                    'Players' : '',
+                    'Favorites' : '',
+                    'Visits' : '',
+                    'Created' : '',
+                    'Updated' : '',
+                    'Genre' : '',
+                    'MaxPlayers' : '',
+                }
+
                 classdata.each(function(i, e) {
                     let obj = $(this)
                     let x = obj.attr('title');
+                    let data = null;
+                    
                     if (x) {
-                        console.log(x);
+                        data = x;
                     } else {
-                        console.log(obj.text());
+                        data = obj.text();
+                    }
+
+                    switch (i) {
+                        case 0:
+                            webdata['Players'] = data;
+                            break;
+                        case 1:
+                            webdata['Favorites'] = data;
+                            break;
+                        case 2:
+                            webdata['Visits'] = data;
+                            break;
+                        case 3:
+                            webdata['Created'] = data;
+                            break;
+                        case 4:
+                            webdata['Updated'] = data;
+                            break;
+                        case 5:
+                            webdata['MaxPlayers'] = data;
+                            break;
+                        case 6:
+                            webdata['Genre'] = data;
                     }
                 });
+
+                console.log(webdata);
             }
         })
     }) 
