@@ -1,6 +1,8 @@
 
 /*
 
+iohgoodness
+
 created: 01/07/2021
 last updated: 01/09/2021
 
@@ -19,10 +21,11 @@ var request = require('request'); // request module
 var moment = require('moment');   // date and time
 const fs = require('fs');         // file storage
 
-// URL
+// CONSTANTS
 const URL = 'https://www.roblox.com/games/5665787539/Relics-Gods-Of-Glory-BETA'; // uri with public data
 const GAMEPASSES_URL = 'https://www.roblox.com/develop/groups/7312028?Page=game-passes'; // uri with gamepass
-const WEBSITE_DATA_DELAY = 60; // rate at which data saves to .csv
+const WEBSITE_DATA_DELAY = 45; // rate (in SECONDS) at which data saves to .csv
+const VERBOSE = false; // output extra informatino
 
 // Return Date
 function getDate() {
@@ -100,7 +103,10 @@ function GetStats() {
                     }
                 });
 
-                console.log(webdata);
+                if (VERBOSE) {
+                    console.log(webdata);
+                }
+
                 csvline = webdata['Date']
                 + ',' + webdata['Time']
                 + ',' + webdata['Players']
