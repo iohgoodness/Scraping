@@ -22,14 +22,15 @@ var moment = require('moment');   // date and time
 const fs = require('fs');         // file storage
 
 // CONSTANTS
+const MINUTES = 60; // single minute, as 60 seconds
 const URL = 'https://www.roblox.com/games/5665787539/Relics-Gods-Of-Glory-BETA'; // uri with public data
 const GAMEPASSES_URL = 'https://www.roblox.com/develop/groups/7312028?Page=game-passes'; // uri with gamepass
-const WEBSITE_DATA_DELAY = 45; // rate (in SECONDS) at which data saves to .csv
+const WEBSITE_DATA_DELAY = 2 * MINUTES; // rate (in SECONDS) at which data saves to .csv
 const VERBOSE = false; // output extra informatino
 
 // Return Date
 function getDate() {
-    return moment().format('l');
+    return moment().format('MM/DD/YY');
 }
 
 // Return Time
@@ -108,14 +109,14 @@ function GetStats() {
                 }
 
                 csvline = webdata['Date']
-                + ',' + webdata['Time']
-                + ',' + webdata['Players']
-                + ',' + webdata['Favorites']
-                + ',' + webdata['Visits']
-                + ',' + webdata['Created'] 
-                + ',' + webdata['Updated']
-                + ',' + webdata['Genre']
-                + ',' + webdata['MaxPlayers']
+                + ',' + (webdata['Time']).replace(/,/g, '')
+                + ',' + (webdata['Players']).replace(/,/g, '')
+                + ',' + (webdata['Favorites']).replace(/,/g, '')
+                + ',' + (webdata['Visits']).replace(/,/g, '')
+                + ',' + (webdata['Created']).replace(/,/g, '')
+                + ',' + (webdata['Updated']).replace(/,/g, '')
+                + ',' + (webdata['Genre']).replace(/,/g, '')
+                + ',' + (webdata['MaxPlayers']).replace(/,/g, '')
                 + '\n';
 
                 fs.appendFile('output.csv', csvline, function (err) {

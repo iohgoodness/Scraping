@@ -1,28 +1,31 @@
-import pandas as pd # pip install pandas
+
+
+# linux subsystem
+# sudo apt-get install python3-pip
+# sudo python3 -m pip install wheel
+# sudo python3 -m pip install pandas
+
+# windows
+# pip install pandas
+
+import pandas as pd
 import numpy as np
 import pandas as pd
 import datetime
 
-df = pd.read_csv('Book1.csv')
+class DataRead():
+    def __init__(self, filename='output.csv'):
+        self.df = pd.read_csv(filename)
 
-def getDataBetweenDates(df, start, end):
-    return df[(df['date'] >= start) & (df['date'] <= end)]
+    # Includes the data at end of ranges: [x, y]
+    def GetDataBetweenDates(self, startDate, endDate):
+        return self.df[(self.df['Date'] >= startDate) & (self.df['Date'] <= endDate)]
+    # Does NOT include the data and end of range: (x, y)
+    def GetDataBetweenDatesNotInclude(self, startDate, endDate):
+        return self.df[(self.df['Date'] > startDate) & (self.df['Date'] < endDate)]
 
-def getDataBetweenTimes(df, start, end):
-    return df[(df['time'] >= start) & (df['time'] <= end)]
+dr = DataRead()
 
-def getHighestValueOfDF(df):
-    return df['players'].max()
+x = dr.GetDataBetweenDatesNotInclude('01/09/21', '01/11/21')
 
-def getLowestValueOfDF(df):
-    return df['players'].min()
-
-def getMinAndMaxOfDFWithDate(df, date):
-    x = getDataBetweenDates(df, '01/04/2021', '01/05/2021')
-    return getLowestValueOfDF(x), getHighestValueOfDF(x)
-
-
-#data = getDataBetweenDates(df, '01/04/2021', '01/05/2021')
-##data = df['01/04/2021']
-#print(data)
-#print(getLowestValueOfDF(data))
+print(x)
